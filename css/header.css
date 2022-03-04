@@ -1,0 +1,24 @@
+.title {
+	background-color: #ededed;
+}
+
+
+.bottom {
+	background-color: #f0eff4;
+}
+
+.title_color {
+	color: #000000;
+}
+
+.mui-bar-tab .mui-tab-item.mui-active {
+	color: #57be6a;
+}
+
+.mui-bar {
+	height: 52px;
+}
+
+/* .mui-input-row.mui-search{
+	top: 50px;
+} */

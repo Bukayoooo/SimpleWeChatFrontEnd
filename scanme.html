@@ -1,0 +1,120 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<script src="js/mui.js"></script>
+		<link href="css/mui.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="css/header.css" />
+
+		<style>
+			
+			#scanComponent {
+				width: 100%;
+				top: 44px;
+				bottom: 0px;
+				position: absolute;
+				text-align: center;
+				background: #000000;
+			}
+			
+		</style>
+	</head>
+
+	<body >
+
+		<header class="mui-bar mui-bar-nav title" style="position: fixed;">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left title-color"></a>
+			<h1 class="mui-title title-color"><b id="chatting-nickname">扫一扫</b></h1>
+		</header>
+		
+		// 二维码扫描器容器
+		<div id="scanComponent"></div>
+		
+		<script type="application/javascript" src="js/app.js"></script>
+		<script type="text/javascript">
+			mui.init();
+			
+			mui.plusReady(function(){
+				var user = app.getUserGlobalInfo();
+				setTimeout("startScan()", "500");
+				
+			});
+			
+			var scan;
+			function startScan(){
+				var user = app.getUserGlobalInfo();
+				var style = {
+					background: "#128E12",
+					frameColor: "#FF1493",
+					scanbarColor: "#FFC0CB"
+				}
+				
+				// 创建二维码扫描对象
+				scan = new plus.barcode.Barcode(
+					'scanComponent', null, style
+				);
+				scan.onmarked = onmarked;
+				scan.start();
+			}
+			
+			// 扫码识别成功事件触发事件, result扫描结果
+			function onmarked(type, result){
+				
+				var user = app.getUserGlobalInfo();
+				
+				if(type === plus.barcode.QR){
+					var content = result.split("This is qrcode of wetchat user:");
+					if(content.length != 2){
+						mui.alert(result);
+					}else{
+						var friendUsername = content[1];
+						console.log(app.serverUrl + "/user/searchFriend?myid=" + user.id
+												+ "&friendUsername=" + friendUsername);
+						plus.nativeUI.showWaiting("请稍后...");
+						
+						mui.ajax(app.serverUrl + "/user/searchFriend?myid=" + user.id 
+												+ "&friendUsername=" + friendUsername, {
+							data:{},
+							dataType:'json',//服务器返回json格式数据
+							type:'post',//HTTP请求类型
+							timeout:10000,//超时时间设置为10秒；
+							headers:{'Content-Type':'application/json'},	 
+										 
+							success:function(data){
+								// console.log("调试。。。。");
+								plus.nativeUI.closeWaiting();
+								
+								if(data.code == 200){
+									mui.openWindow({
+										url: "search-friend-result.html",
+										id: "search-friend-result.html",
+										styles: {},
+										extras: {
+											willBeFriend: data.data
+										}
+									});
+									
+								}else{
+									app.showToast(data.msg, "error");
+								}
+								
+							},
+							error:function(xhr,type,errorThrown){
+								//异常处理；
+								console.log("链接后端失败" + type);
+							}
+						});
+						
+					}
+				}
+				scan.start();
+			}
+			
+			
+		</script>
+	</body>
+
+</html>

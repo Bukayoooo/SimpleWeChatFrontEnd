@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <script src="js/mui.min.js"></script>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+	<link href="css/header.css" rel="stylesheet" />
+	<link href="./icon/iconfont.css" rel="stylesheet"/>
+    <script type="text/javascript" charset="utf-8">
+      	mui.init();
+		
+		mui.plusReady(function(){
+			plus.navigator.setStatusBarStyle("light");
+			plus.navigator.setStatusBarBackground("#ededed");
+		});
+		
+    </script>
+</head>
+<body>
+	
+	<header id="header1" class="mui-bar mui-bar-nav title">
+		<h1 class="mui-title title_color" id="wechat_title">微信</h1>
+		<!-- <span class="mui-icon iconfont icon-tianjiahaoyou" style="float: right;font-size: 20px; margin-right: 2px;"></span> -->
+	</header>
+	
+	<nav class="mui-bar mui-bar-tab bottom">
+		<a class="mui-tab-item mui-active" tabindex="0">
+			<span class="mui-icon iconfont icon-icon-"></span>
+			<span class="mui-tab-label">微信</span>
+		</a>
+		<a class="mui-tab-item" tabindex="1">
+			<span class="mui-icon iconfont icon-tongxunlu"></span>
+			<span class="mui-tab-label">通讯录</span>
+		</a>
+		<a class="mui-tab-item" tabindex="2">
+			<span class="mui-icon iconfont icon-faxian"></span>
+			<span class="mui-tab-label">发现</span>
+		</a>
+		<a class="mui-tab-item" tabindex="3">
+			<span class="mui-icon iconfont icon-wo"></span>
+			<span class="mui-tab-label">我</span>
+		</a>
+	</nav>
+	
+	<script type="application/javascript">
+		
+		var webviewArray = [
+			{
+				pageId: "wechat-chatlist.html",
+				pageUrl: "wechat-chatlist.html",
+				title: "微信"
+			},
+			{
+				pageId: "wechat-contact.html",
+				pageUrl: "wechat-contact.html",
+				title: "通讯录"
+			},
+			{
+				pageId: "wechat-discover.html",
+				pageUrl: "wechat-discover.html",
+				title: "发现"
+			},
+			{
+				pageId: "wechat-me.html",
+				pageUrl: "wechat-me.html",
+				title: ""
+			}
+		];
+		
+		var wechatStyle = {
+			top: "52px",
+			bottom: "87px"
+		}
+		
+		mui.plusReady(function(){
+			// 获取当前主页Webview对象
+			var indexWebview = plus.webview.currentWebview();
+			var wechat_title = document.getElementById('wechat_title');
+			
+			// 向当前的主页追加4张webview对象
+			for(var i = 0; i < webviewArray.length; i++){
+				var wechatPage = plus.webview.create(webviewArray[i].pageUrl, 
+													 webviewArray[i].pageId, wechatStyle);
+				// 隐藏webview窗口
+				wechatPage.hide();
+				// 将4张子页面追加值webview窗口
+				indexWebview.append(wechatPage);
+			}
+			// 主页中显示chatlist页面
+			plus.webview.show(webviewArray[0].pageId);
+			
+			
+		});
+		
+		// 为tab绑定tap事件，展示不同的界面
+		mui(".mui-bar-tab").on("tap", "a", function(){
+			// 获取tab索引
+			var tabindex = this.getAttribute("tabindex");
+			var iconHtml = '';
+			var header1 = document.getElementById('header1');
+			if(tabindex == 1){
+				iconHtml = '<h1 class="mui-title title_color" id="wechat_title">通讯录</h1>'
+								+ '<span id="span_add_friend" class="mui-icon iconfont icon-tianjiahaoyou" style="float: right;font-size: 20px; margin-right: 2px;"></span>';
+				header1.innerHTML = iconHtml;
+				
+				var span_add_friend = document.getElementById("span_add_friend");
+				span_add_friend.addEventListener("tap", function(){
+					mui.openWindow("search-friend.html", "search-friend.html");
+				});
+				
+				plus.navigator.setStatusBarBackground("#ededed");
+			}else if(tabindex == 3){
+				plus.navigator.setStatusBarBackground("#FFFFFF");
+				iconHtml = '<h1 class="mui-title title_color" id="wechat_title"></h1>';
+				header1.innerHTML = iconHtml;
+				header1.style.backgroundColor = "#FFFFFF";
+			}
+			else{
+				iconHtml = '<h1 class="mui-title title_color" id="wechat_title">通讯录</h1>';
+				header1.innerHTML = iconHtml;
+				plus.navigator.setStatusBarBackground("#ededed");
+				header1.style.backgroundColor = "#ededed";
+			}
+			
+			wechat_title.innerHTML = webviewArray[tabindex].title;
+			
+			// console.log(tabindex);
+			// 显示点击的tab对应的页面, fade-in:显示Webview窗口的动画效果, 200:Webview窗口动画的持续时间
+			plus.webview.show(webviewArray[tabindex].pageId, "fade-in", 200);
+			
+			// 隐藏其他不需要的页面
+			for(var i = 0; i < webviewArray[i].length; i++){
+				if(i != tabindex){
+					plus.webview.hide(webviewArray[i].pageId,
+									  "fade-out", 200);
+				}
+			}
+			
+		});
+		
+		
+		
+		
+		// 预加载, 触发其他页面的刷新事件
+		function initData() {
+			var imooc_chatlist = plus.webview.getWebviewById("wetchat-chatlist.html");
+			mui.fire(imooc_chatlist, "refresh");
+			
+			var imooc_me = plus.webview.getWebviewById("wetchat-me.html");
+			mui.fire(imooc_me, "refresh");
+		}
+		
+		
+	</script>
+	
+</body>
+</html>

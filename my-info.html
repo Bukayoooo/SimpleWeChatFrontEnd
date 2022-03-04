@@ -1,0 +1,167 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>我</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.css" rel="stylesheet" />
+		<link href="css/header.css" rel="stylesheet"? />
+	</head>
+
+	<body>
+		
+		<header class="mui-bar mui-bar-nav title">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" style="color: black;"></a>
+			<h1 class="mui-title title_color" id="wechat_title">个人信息</h1>
+		</header>
+		
+		<div class="mui-content">
+			
+			<style>
+				
+				#arrow {
+					margin-top: 56px;
+				}
+				
+				.table-view {
+					height: 130px;
+				}
+				
+				.media-body {
+					margin-left: 20px;
+					margin-top: 28px;
+				}
+				
+			</style>
+					
+
+		</div>
+				
+				
+				
+				
+		
+		
+		<ul class="mui-table-view">
+			<li class="mui-table-view-cell mui-media">
+				<a id="link_myface" href="javascript:;">
+					<span class="mui-pull-right mui-icon mui-icon-arrowright" 
+							style="line-height: 42px;color: lightgray;margin-left: 3px;"></span>
+					<img id="img_my_face" class="mui-media-object mui-pull-right" src="">
+					<div class="mui-media-body" style="line-height: 42px;font-size: 16px;">
+							头像
+					</div>
+				</a>
+			</li>
+			
+			<li class="mui-table-view-cell mui-media">
+				<a id="link_nickname" href="javascript:;">
+					<span class="mui-pull-right mui-icon mui-icon-arrowright" 
+							style="color: lightgray;margin-left: 3px; line-height: 28px;" ></span>
+					<span id="span_nickname" class="mui-pull-right" 
+							style="color: gray;font-size: 14px; line-height: 28px;"></span>
+					<div class="mui-media-body" style="line-height: 28px;">
+						昵称
+					</div>
+				</a>
+		    </li>
+			<li class="mui-table-view-cell mui-media">
+				<a href="javascript:;">
+					<span id="span_username" class="mui-pull-right" 
+							style="color: gray;font-size: 14px; line-height: 28px;" ></span>
+					<div class="mui-media-body" style="line-height: 28px;">
+						微信号
+					</div>
+				</a>
+			</li>
+			<li class="mui-table-view-cell mui-media">
+				<a id="link_my_qrcode" href="javascript:;">
+					<span class="mui-pull-right mui-icon mui-icon-arrowright" 
+							style="color: lightgray;margin-left: 3px;"></span>
+					<img class="mui-media-object mui-pull-right" 
+						src="image/qrcode.png" style="max-width: 20px;height: 20px;">
+					<div class="mui-media-body" style="line-height: 28px;">
+						二维码
+					</div>
+				</a>
+			</li>
+		</ul>
+		
+
+		
+		<script src="js/mui.js"></script>
+		<script src="js/app.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			
+			mui.plusReady(function () {
+				
+				refreshUserInfo();    
+				
+				// 自定义页面刷新事件
+				window.addEventListener("refresh", function(){
+					refreshUserInfo();
+				});
+				
+				// 获取当前页面webview，刷新用户信息
+				var mewebview = plus.webview.currentWebview();
+				mewebview.addEventListener("show", function(){
+					refreshUserInfo();
+				});
+			   
+				// 页面跳转至我的头像
+				var link_myface = document.getElementById("link_myface");
+				link_myface.addEventListener("tap", function(){
+					mui.openWindow("my-face.html", "my-face.html");
+				});
+				
+				// 页面跳转至修改昵称
+				var link_nickname = document.getElementById("link_nickname");
+				link_nickname.addEventListener("tap", function(){
+					mui.openWindow("my-nickname.html", "my-nickname.html");
+				});
+				
+				// 页面跳转至我的二维码
+				var link_my_qrcode = document.getElementById("link_my_qrcode");
+				link_my_qrcode.addEventListener("tap", function(){
+					mui.openWindow("my-qrcode.html", "my-qrcode.html");
+				});
+				
+				
+				// 刷新页面用户信息
+				function refreshUserInfo(){
+					// 从手机缓存中获取用户信息
+					var user = app.getUserGlobalInfo();
+					console.log(JSON.stringify(user));	// user为json对象
+					
+					if(user != null){
+						var faceImage = user.faceImage;
+						var nickname = user.nickname;
+						var username =  user.username;
+						
+						var span_nickname = document.getElementById("span_nickname");
+						var span_username = document.getElementById("span_username");
+						
+						span_nickname.innerHTML = nickname;
+						span_username.innerHTML = username;
+						
+						if(app.isNotNull(faceImage)){
+							var img_my_face = document.getElementById("img_my_face");
+							// 设置头像，地址为图片服务器里的图像
+							img_my_face.src = app.imageServerUrl + faceImage;
+							console.log(img_my_face.src);
+						}
+					}
+				}
+				
+
+			});
+			
+			
+			
+		</script>
+	</body>
+
+</html>
+ 
